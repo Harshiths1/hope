@@ -32,7 +32,7 @@ const DashboardView = async () => {
               You can start delivery as soon as you click on the below button.
             </p>
             <Button className="mt-4">
-              <Link href={"/interview"}>Start Delivery</Link>
+              <Link href={"/find"}>Start Delivery</Link>
             </Button>
           </div>
         </div>
