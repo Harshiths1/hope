@@ -5,6 +5,7 @@ import { useEffect, useRef } from 'react'
 interface MapProps {
   pickupCoordinate: [number, number]
   dropoffCoordinate: [number, number]
+  driverCoordinate: [number, number]
   distance: string
 }
 
@@ -15,7 +16,7 @@ declare global {
   }
 }
 
-const Map: React.FC<MapProps> = ({ pickupCoordinate, dropoffCoordinate, distance }) => {
+const Map: React.FC<MapProps> = ({ pickupCoordinate, dropoffCoordinate, driverCoordinate, distance }) => {
   const mapRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -95,7 +96,7 @@ const Map: React.FC<MapProps> = ({ pickupCoordinate, dropoffCoordinate, distance
     return () => {
       window.initMap = () => {};
     }
-  }, [pickupCoordinate, dropoffCoordinate, distance])
+  }, [pickupCoordinate, dropoffCoordinate, driverCoordinate, distance])
 
   return <div ref={mapRef} className="w-full h-full min-h-[400px]" />
 }

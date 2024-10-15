@@ -157,7 +157,7 @@ const Page = () => {
                   <div>
                     <h3 className="font-bold">{vehicle.name}</h3>
                     <p>Capacity: {vehicle.capacity}</p>
-                    <p>Price: ${prices[vehicle.id] || 'Calculating...'}</p>
+                    <p>Price: Rs{prices[vehicle.id] || 'Calculating...'}</p>
                   </div>
                 </CardContent>
               </Card>
