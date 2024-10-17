@@ -46,12 +46,9 @@ const OnboardingView: FC<{
     resolver: zodResolver(driverFormSchema),
     mode: "onChange",
     defaultValues: {
-      id: user.data.user?.id || "",
       first_name: "",
       last_name: "",
       city: "",
-      vehicle_model: "",
-      vehicle_type: "",
     },
   });
 
@@ -80,12 +77,12 @@ const OnboardingView: FC<{
 
   const onDriverSubmit: SubmitHandler<Driver> = async (data) => {
     setIsLoading(true);
-
+    console.log(data)
     try {
       const { data: userData, error: userError } = await supabaseBrowserClient.auth.updateUser({
         data: {
           userType: "driver",
-          full_name: data.first_name + " " + data.last_name,
+          isOnboarding: true,
         },
       });
       if (userError) throw userError;
@@ -184,60 +181,62 @@ const OnboardingView: FC<{
       </FormProvider>
     </Card>
   );
-
-  const renderDriverForm = () => (
-    <Card className="w-full max-w-md py-4 shadow-none rounded-none border-0">
-      <FormProvider {...driverMethods}>
-        <form onSubmit={driverMethods.handleSubmit(onDriverSubmit)}>
-          <CardHeader>
-            <CardTitle className="text-2xl mb-2 text-gray-900 dark:text-gray-100">
-              Driver Partner Registration
-            </CardTitle>
-            <CardDescription className="text-gray-600 dark:text-gray-400">
-              Please provide your information.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="mb-4">
-              <Label htmlFor="full_name">Full Name</Label>
-              <Input
-                id="first_name"
-                type="text"
-                {...driverMethods.register("first_name")}
-              />
-            </div>
-            <div className="mb-4">
-              <Label htmlFor="last_name">Last Name</Label>
-              <Input
-                id="last_name"
-                type="text"
-                {...driverMethods.register("last_name")}
-              />
-            </div>
-            <div className="mb-4">
-              <Label htmlFor="address">Address</Label>
-              <Input
-                id="address"
-                type="text"
-                {...driverMethods.register("city")}
-              />
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="w-full"
-            >
-              {isLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
-              Submit
-            </Button>
-          </CardFooter>
-        </form>
-      </FormProvider>
-    </Card>
-  );
-
+  const renderDriverForm = () => {
+    console.log(driverMethods.formState.errors); // Log any validation errors
+    return (
+      <Card className="w-full max-w-md py-4 shadow-none rounded-none border-0">
+        <FormProvider {...driverMethods}>
+          <form onSubmit={driverMethods.handleSubmit(onDriverSubmit)}>
+            <CardHeader>
+              <CardTitle className="text-2xl mb-2 text-gray-900 dark:text-gray-100">
+                Driver Partner Registration
+              </CardTitle>
+              <CardDescription className="text-gray-600 dark:text-gray-400">
+                Please provide your information.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-4">
+                <Label htmlFor="first_name">First Name</Label>
+                <Input
+                  id="first_name"
+                  type="text"
+                  {...driverMethods.register("first_name")}
+                />
+              </div>
+              <div className="mb-4">
+                <Label htmlFor="last_name">Last Name</Label>
+                <Input
+                  id="last_name"
+                  type="text"
+                  {...driverMethods.register("last_name")}
+                />
+              </div>
+              <div className="mb-4">
+                <Label htmlFor="address">Address</Label>
+                <Input
+                  id="address"
+                  type="text"
+                  {...driverMethods.register("city")}
+                />
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button
+                type="submit"
+                disabled={isLoading} // Ensure button is enabled unless loading
+                className="w-full"
+              >
+                {isLoading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
+                Submit
+              </Button>
+            </CardFooter>
+          </form>
+        </FormProvider>
+      </Card>
+    );
+  };
+  
   return (
     <AuthLayout>
       {userType === null ? renderUserTypeSelection() : 

@@ -27,13 +27,13 @@ export type DriverPartnerFormFields = {
 
 export type RideRequest = {
   id: string;
-  user_id: string;
-  driver_id: string | null;
+  client_id: string;
+  pickupLat: number;
+  pickupLong: number;
+  dropoffLat: number;
+  dropoffLong: number;
+  assignedDriver: string | null;
   status: 'pending' | 'accepted' | 'rejected' | 'completed';
-  pickup_location: string;
-  dropoff_location: string;
-  vehicle_type: 'semi-truck' | 'tempo';
-  created_at: string;
 };
 
 export type DriverLocation = {

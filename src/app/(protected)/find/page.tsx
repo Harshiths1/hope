@@ -1,13 +1,14 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import Map from '@/components/Map'
 import baseFares from '@/config/baseFares.json'
+import useSocketStore from '@/states/socketState'
+import { FindRideModal } from '@/components/FindRideModal'
 
 interface Vehicle {
   id: string;
@@ -32,7 +33,6 @@ const vehicles: Vehicle[] = [
 ]
 
 const Page = () => {
-  const router = useRouter()
   const [pickup, setPickup] = useState('')
   const [dropoff, setDropoff] = useState('')
   const [pickupCoordinate, setPickupCoordinate] = useState<[number, number]>([0, 0])
@@ -42,6 +42,17 @@ const Page = () => {
   const [duration, setDuration] = useState('')
   const [selectedVehicle, setSelectedVehicle] = useState<string | null>(null)
   const [prices, setPrices] = useState<{[key: string]: number}>({})
+  const { isConnected, initSocket, disconnectSocket } = useSocketStore()
+  const [showDriversList, setShowDriversList] = useState(false)
+
+  useEffect(() => {
+    initSocket();
+    console.log('Socket connection status:', isConnected);
+
+    return () => {
+      disconnectSocket();
+    };
+  }, []);
 
   useEffect(() => {
     if (distance) {
@@ -90,7 +101,7 @@ const Page = () => {
 
   const handleProceedToCheckout = () => {
     if (selectedVehicle) {
-      router.push(`/checkout?vehicle=${selectedVehicle}&distance=${distance}&duration=${duration}&price=${prices[selectedVehicle]}`)
+      setShowDriversList(true)
     } else {
       alert('Please select a vehicle before proceeding to checkout.')
     }
@@ -98,6 +109,7 @@ const Page = () => {
 
   return (
     <div className="container mx-auto p-4">
+      {showDriversList && <FindRideModal open={showDriversList} setOpen={setShowDriversList} pickupCoordinate={pickupCoordinate} dropoffCoordinate={dropoffCoordinate} />}
       <h1 className="text-2xl font-bold mb-4">Find a Ride</h1>
       {!showMap ? (
         <Card className="w-full max-w-md mx-auto">
@@ -131,6 +143,7 @@ const Page = () => {
               pickupCoordinate={pickupCoordinate}
               dropoffCoordinate={dropoffCoordinate}
               distance={distance}
+              driverCoordinate={pickupCoordinate} // TODO: get driver coordinate from socket
             />
             <Button 
               onClick={() => setShowMap(false)}
@@ -168,7 +181,7 @@ const Page = () => {
             className="w-full"
             disabled={!selectedVehicle}
           >
-            Proceed to Checkout
+            Find Nearest Drivers
           </Button>
         </>
       )}
