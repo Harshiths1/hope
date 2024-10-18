@@ -28,13 +28,10 @@ This document outlines the architecture and implementation details of our on-dem
   
 
 ## 2. User Flows
-// insert a line
-
 ![](https://lh7-rt.googleusercontent.com/docsz/AD_4nXcZrabHGnebsTJMyW0-UbM70puMNfJDPpp6bMydQXjIoG2sIxSHIIdkX94M57BtiOcn1JqmPJRc71jASqNozJafLcj-nMx8MbefLF0opQk4WC13WYetAG4sgfhopF6H9srlb7-Tgj23YiXE7ScBbIaL4gur?key=FVHlt1ksdTsSmplsFC4-cg)
 
 ## 3. Architecture
   
-  `			 
 
 ![](https://lh7-rt.googleusercontent.com/docsz/AD_4nXfYj2cmgk87jZWdhXjVSI_T9lU1iKgXNpxt7ebSHCDKGBeAaLeBA2tsOLRDmSfRS7g8ptIt6hXDxVw06H29MuwXW-HyX9uoujScUAtpwZQWWcM81pSnMM7MiuKpcve40OHMEAsBsCXsXDfPSUqJkO17dAU?key=FVHlt1ksdTsSmplsFC4-cg)
 
@@ -56,82 +53,44 @@ Our system architecture consists of the following key components:
 
 
 ## 4. Scalability and Performance  
+To handle 10,000 requests per second and support 50 million users and 100,000 drivers,Let us assume we have 50 million daily active users (DAU) with 100,000 drivers
+we will have to handle 864 million requests daily.
+
+
+  Requests Per Second (RPS) for our system : 10000
+
+  Storage
+  If we assume each message on average is 400 bytes, we will require about 345 GB of database storage every day.
+    And for 10 years, we will require about 1.2 PB of storage.
+
+  345 * 10(years)*365(days) = 1.2 PB data
+  
+ Bandwidth
+  As our system is handling 400 GB of ingress every day, we will require a minimum bandwidth of around 4 MB per second.
+
+
+Data Rate= 353,280M / 86,400secondsB​     ≈ 4.09MB/second
+
+So the following Measures need to be implemented
+
+## The Use of Bun for 6x performance
+
+## Load Balancing
+
+## Caching
+
+## Database Optimization
+
+## Microservices Architecture
+ 
+
 ## 5. Database Design  
 
 ![](https://lh7-rt.googleusercontent.com/docsz/AD_4nXdne8MLoAg8_VZ5tX8H0UZZI9qVte63keMPR0TdkM9idxw34wV2tY6NxzN_NQ3CG1Cqu8fcMNYMK8Sw6AAVfhHhUN3lCQAmlyOEy5YTAuHqPhjRnter1zCsGvQAskHxSmmLzFHMtMyN29yIv0nSQBrx7HLv?key=FVHlt1ksdTsSmplsFC4-cg)
 
-  
-  
-  
-  
-  
 
 There are three sequences of operations before a trip starts, as shown in the image above: i) Update Driver Location ii) List nearby drivers iii) Requesting for a ride. The first sequence of operations involves updating the driver locations as drivers keep changing their locations. The second sequence comprises of the steps involved in fetching the list of nearby drivers. The third sequence includes a series of steps involved in requesting and dispatching a ride.
 
-  
-  
-
--**Scalabiligy : nginix , …..
-
-  
-
-## 3. Key Features
-
-  
-
-- User registration and authentication (OAuth)
-
-- Booking service with upfront price estimation
-
-- Real-time vehicle tracking
-
-- Driver job assignment and status updates
-
-- Admin dashboard for fleet management and analytics
-
-  
-
-## 4. Scalability and Performance
-
-  
-
-To handle 10,000 requests per second and support 50 million users and 100,000 drivers, we've implemented the following scalability measures:
-
-  
-
-### Load Balancing
-
-- Utilize Supabase's built-in load balancing capabilities
-
-- Implemented application-level load balancing using the service Nginx.
-
-  
-
-### Caching
-
-- Implement Redis caching for frequently accessed data (e.g.,Latitude and Longitude, user profiles, vehicle information)
-
-- Use Next.js built-in caching mechanisms for static and server-side rendered pages
-
-  
-
-### Database Optimization
-
-- Leverage Supabase's PostgreSQL database with proper indexing and query optimization
-
-- Implement database sharding for user and booking data based on geographical regions (Geosharding)
-
-  
-
-### Microservices Architecture
-
-- For now we are using only socket as a microservice but in the future we can also have microservice for maps to enhance our system.
-
-  
-
-## 5. Database Design
-  
-![](https://lh7-rt.googleusercontent.com/docsz/AD_4nXfse4xN51A1-sF3dt9Hb7LuwV0WQEGtct1_x4ULX3k8PJn4tlP5uuRuuoSlXb4LOmrfvOWKreGBJ3zRAcH2A0GFbthLznIg3gvqBEouDHJpLYifdJYXjNFphzbtzKcL-pP9nBJwYFqClEUtnBWI9icoxelW?key=FVHlt1ksdTsSmplsFC4-cg)
 
 Key entities in our database schema:
 
@@ -200,7 +159,6 @@ Our dynamic pricing model considers:
 - All of these included we have a price per kilometer calculated which can be changed automatically as it is broken into components like base fare and variable fare thus future proofing it .
 
   
-
 Surge pricing is implemented by:
 
 - Monitoring real-time demand in specific areas
@@ -210,11 +168,8 @@ Surge pricing is implemented by:
 - Using a distributed cache (e.g., Redis) to store and update pricing factors in real-time
 - Future scope we can deploy prediction models to do this work and get good results 
 
-  
 
 ## 9. Security and Authentication
-
-  
 
 - OAuth implementation via Supabase ensures secure user authentication
 
@@ -229,7 +184,6 @@ Surge pricing is implemented by:
 ## 10. Areas for Improvement
 
   
-
 1. *Scheduled Bookings*: Implement a feature for users to schedule future bookings
 
 - Use a job scheduler (e.g., Bull with Redis) to manage future bookings
